@@ -1,10 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>zeromq-socketio-backbone test</title>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="underscore.js"></script>
 <script src="backbone.js"></script>
 <script src="/socket.io/socket.io.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css">
+
 <script type="text/template" id="message-template">
-Message: <%= contents %>
+<span class="messageContainer box_round">
+<span class="message"><%= contents %></span>
+</span>
 </script>
+
 <script>
 (function($) {
 
@@ -19,12 +29,16 @@ Message: <%= contents %>
   });
 
   var MessageView = Backbone.View.extend({
-    tagName: 'li',
+    //tagName: 'span',
+    //className: 'messageContainer box_round',
     template: _.template($('#message-template').html()),
     initialize: function() {
       this.model.bind('change', this.render, this);
     },
     render: function() {
+      //var data = this.model.toJSON();
+      //data.contents = data.contents.replace(/\n/g, "<br>\n");
+      //$(this.el).html(this.template(data));
       $(this.el).html(this.template(this.model.toJSON()));
       return this;
     },
@@ -44,6 +58,9 @@ Message: <%= contents %>
   var messages = new Messages();
   var appView = new AppView({el: '#app', collection: messages});
 
+window.stk = {
+ messages: messages
+}
 
   var socket = io.connect('http://' + location.hostname);
   socket.on('message', function (data) {
@@ -53,7 +70,10 @@ Message: <%= contents %>
 
 })(jQuery);
 </script>
+
 <body>
 <div id="app">
-<ul id="message-list"></ul>
+<span id="message-list"></span>
 </div>
+</body>
+</html>
