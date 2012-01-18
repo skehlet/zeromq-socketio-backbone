@@ -1,0 +1,59 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script src="underscore.js"></script>
+<script src="backbone.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/template" id="message-template">
+Message: <%= contents %>
+</script>
+<script>
+(function($) {
+
+  var Message = Backbone.Model.extend({
+    defaults: {
+      contents: 'Unknown'
+    }
+  });
+
+  var Messages = Backbone.Collection.extend({
+    model: Message
+  });
+
+  var MessageView = Backbone.View.extend({
+    tagName: 'li',
+    template: _.template($('#message-template').html()),
+    initialize: function() {
+      this.model.bind('change', this.render, this);
+    },
+    render: function() {
+      $(this.el).html(this.template(this.model.toJSON()));
+      return this;
+    },
+  });
+
+  var AppView = Backbone.View.extend({
+    initialize: function() {
+      this.collection.bind('add', this.addOne, this);
+    },
+    addOne: function(model) {
+      var newView = new MessageView({model: model});
+      this.$('#message-list').append(newView.render().el);
+    }
+  });
+
+
+  var messages = new Messages();
+  var appView = new AppView({el: '#app', collection: messages});
+
+
+  var socket = io.connect('http://' + location.hostname);
+  socket.on('message', function (data) {
+    console.log(data);
+    messages.add({contents: data});
+  });
+
+})(jQuery);
+</script>
+<body>
+<div id="app">
+<ul id="message-list"></ul>
+</div>
