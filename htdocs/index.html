@@ -29,16 +29,11 @@
   });
 
   var MessageView = Backbone.View.extend({
-    //tagName: 'span',
-    //className: 'messageContainer box_round',
     template: _.template($('#message-template').html()),
     initialize: function() {
       this.model.bind('change', this.render, this);
     },
     render: function() {
-      //var data = this.model.toJSON();
-      //data.contents = data.contents.replace(/\n/g, "<br>\n");
-      //$(this.el).html(this.template(data));
       $(this.el).html(this.template(this.model.toJSON()));
       return this;
     },
