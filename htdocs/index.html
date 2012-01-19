@@ -53,10 +53,6 @@
   var messages = new Messages();
   var appView = new AppView({el: '#app', collection: messages});
 
-window.stk = {
- messages: messages
-}
-
   var socket = io.connect('http://' + location.hostname);
   socket.on('message', function (data) {
     console.log(data);
